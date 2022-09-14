@@ -1,4 +1,7 @@
 import datetime
+import typing
+
+import numpy as np
 
 
 def julian_day(time_of_interest: datetime.datetime) -> float:
@@ -20,3 +23,109 @@ def julian_day(time_of_interest: datetime.datetime) -> float:
         time_of_interest - start
     ).total_seconds() / 86400  # Get days since January 1, 1
     return diff + starting_point
+
+
+def sun_angle(
+    time: datetime.datetime,
+    lat: typing.Union[np.array, float],
+    lon: typing.Union[np.array, float],
+    elevation: float = 0.0,
+) -> typing.Union[np.array, float]:
+    """ Compute the altitude angle of the sun
+
+    Parameters
+    ----------
+    time: datetime.datetime
+        Date and time to compute angles
+    lat: typing.Union[np.array, float]
+        Latitude(s) of interest
+    lon: typing.Union[np.array, float]
+        Longitude(s) of interest
+    elevation: float, optional
+        Height at which to compute altitude angle
+
+    Returns
+    -------
+    float:
+        Altitude angle
+    """
+    # Check for out of bounds
+    try:
+        if any(lat < -90) or any(lat > 90) or any(lon < -180) or any(lon > 180):
+            raise ValueError("Latitude or Longitude out of bounds")
+    except TypeError:
+        if (lat < -90) or (lat > 90) or (lon < -180) or (lon > 180):
+            raise ValueError("Latitude or Longitude out of bounds")
+    if elevation < 0:
+        raise ValueError("Negative elevation is not allowed")
+
+    k = np.pi / 180
+
+    # Number of Julian Centuries since Jan 1, 2000 12 UT
+    jd = julian_day(time)
+    num_centuries = (jd - 2451545.0) / 36525.0
+    num_centuries2 = num_centuries * num_centuries
+    num_centuries3 = num_centuries2 * num_centuries
+
+    # Solar Coordinates:
+    # Mean anomaly:
+    M = np.deg2rad(
+        357.52910
+        + 35999.05030 * num_centuries
+        - 0.0001559 * num_centuries2
+        - 0.00000048 * num_centuries3
+    )  # [rad]
+    # Mean longitude:
+    L0 = 280.46645 + 36000.76983 * num_centuries + 0.0003032 * num_centuries2  # [deg]
+    DL = (
+        (1.914600 - 0.004817 * num_centuries - 0.000014 * num_centuries2) * np.sin(M)
+        + (0.019993 - 0.000101 * num_centuries) * np.sin(2 * M)
+        + 0.000290 * np.sin(3 * M)
+    )
+
+    # True longitude
+    L = np.deg2rad(L0 + DL)  # [deg]
+
+    # Convert ecliptic longitude L to right ascension RA and declination delta:
+    eps = 0.40910500213454565  # [rad] obliquity of ecliptic 23.43999 degrees
+    X = np.cos(L)
+    Y = np.cos(eps) * np.sin(L)
+    Z = np.sin(eps) * np.sin(L)
+    R = np.sqrt(1 - Z ** 2)
+
+    delta = np.arctan2(Z, R)  # [rad] declination -- latitude position of sun --
+    right_ascension = 7.63943726841098 * np.arctan2(
+        Y, (X + R)
+    )  # [hours] right ascension
+    right_ascension = right_ascension * 360 / 24  # [deg] right ascension
+
+    # Compute Sidereal time at Greenwich (only depends on time)
+    theta0 = (
+        280.46061837
+        + 360.98564736629 * (jd - 2451545.0)
+        + 0.000387933 * num_centuries2
+        - num_centuries3 / 38710000.0
+    )  # [deg]
+    theta0 = theta0 % 360
+
+    theta = np.deg2rad(theta0 + lon)  # [rad]
+    tau = theta - np.deg2rad(right_ascension)  # [rad]
+    beta = np.deg2rad(lat)  # [rad]
+    altitude_angle = np.rad2deg(
+        np.arcsin(
+            np.sin(beta) * np.sin(delta) + np.cos(beta) * np.cos(delta) * np.cos(tau)
+        )
+    )  # [deg]
+    azimuth_angle = np.rad2deg(
+        np.arctan2(
+            -np.sin(tau), (np.cos(beta) * np.tan(delta) - np.sin(beta) * np.cos(tau))
+        )
+    )
+
+    # Radius of earth
+    R = 6370  # [km]
+
+    altitude_angle_corrected = altitude_angle + np.rad2deg(
+        np.arccos(R / (R + elevation))
+    )
+    return altitude_angle_corrected

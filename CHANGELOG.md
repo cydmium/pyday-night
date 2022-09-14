@@ -7,5 +7,6 @@ All dates listed follow the ISO standard of yyyy-mm-dd.
 ## [Unreleased]
 ### Added
  - julian_day function to compute Julian Day (days since Jan 1, 4713 BC 12 UT) [David Richardson <drichardson42@gatech.edu>]
+ - sun_angle function to compute altitude angle at any location and elevation [David Richardson <drichardson42@gatech.edu>]
 ### Changed
 ### Removed
