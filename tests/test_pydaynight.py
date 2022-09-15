@@ -32,10 +32,10 @@ def test_sun_angle_no_elevation():
         == 66.9519
     )
 
-    # Nighttime at 30, 30 on Jan 1, 1900
+    # Nighttime at 30, 30 on Feb 29, 1600
     assert (
-        round(pydaynight.sun_angle(datetime.datetime(1900, 1, 1), 30, 30), 4)
-        == -63.1021
+        round(pydaynight.sun_angle(datetime.datetime(1600, 2, 29), 30, 30), 4)
+        == -56.6226
     )
 
 
@@ -81,6 +81,10 @@ def test_sun_angle_bounds():
     # Elevation out of bounds
     with pytest.raises(ValueError):
         pydaynight.sun_angle(datetime.datetime(2000, 1, 1), 0, 0, -10)
+
+    # Date doesn't exist
+    with pytest.raises(ValueError):
+        pydaynight.sun_angle(datetime.datetime(1900, 2, 29), 0, 0)
 
 
 def test_sun_angle_array():
