@@ -51,13 +51,18 @@ def sun_angle(
     """
     # Check for out of bounds
     try:
-        if any(lat < -90) or any(lat > 90) or any(lon < -180) or any(lon > 180):
+        if (
+            (lat < -90).any()
+            or (lat > 90).any()
+            or (lon < -180).any()
+            or (lon > 180).any()
+        ):
             raise ValueError("Latitude or Longitude out of bounds")
-    except TypeError:
+    except AttributeError:
         if (lat < -90) or (lat > 90) or (lon < -180) or (lon > 180):
             raise ValueError("Latitude or Longitude out of bounds")
-    if elevation < 0:
-        raise ValueError("Negative elevation is not allowed")
+    if altitude < 0:
+        raise ValueError("Negative altitude is not allowed")
 
     k = np.pi / 180
 
