@@ -134,3 +134,56 @@ def sun_angle(
         np.arccos(R / (R + altitude))
     )
     return altitude_angle_corrected
+
+
+def mask(
+    time: datetime.datetime, lon_grid: np.ndarray, lat_grid: np.ndarray, altitude
+) -> np.ndarray:
+    """ Create a mask where 1s represent daytime and 0s represent nighttime from provided lat/lon grid
+
+    Parameters
+    ----------
+    time: datetime.datetime
+        Time of interest [UT]
+    lon_grid: np.ndarray
+        Meshgrid of longitude points
+    lat_grid: np.ndarray
+        Meshgrid of latitude points
+    altitude: float
+        km above sea level
+
+    Returns
+    -------
+    np.ndarray:
+        Mask of where daytime (1s) and nighttime (0s) occurs
+    """
+    output = np.zeros(lon_grid.shape)
+    output[sun_angle(time, lat_grid, lon_grid, altitude) > 0] = 1
+    return output
+
+
+def easy_mask(
+    time: datetime.datetime, extent: tuple, altitude: float, resolution: float
+) -> np.ndarray:
+    """ Create a mask where 1s represent daytime and 0s represent nighttime from extent/resolution
+
+    Parameters
+    ----------
+    time: datetime.datetime
+        Time of interest [UT]
+    extent: tuple
+        (lon_min, lon_max, lat_min, lat_max)
+    altitude: float
+        km above sea level
+    resolution: float
+        Step size for the mask
+
+    Returns
+    -------
+    np.ndarray:
+        Mask of where daytime (1s) and nighttime (0s) occurs
+    """
+    lats = np.arange(extent[2], extent[3] + resolution, resolution)
+    lons = np.arange(extent[0], extent[1] + resolution, resolution)
+    lon_grid, lat_grid = np.meshgrid(lons, lats)
+    return mask(time, lon_grid, lat_grid, altitude)
