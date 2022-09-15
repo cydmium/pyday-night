@@ -29,7 +29,7 @@ def sun_angle(
     time: datetime.datetime,
     lat: typing.Union[np.array, float],
     lon: typing.Union[np.array, float],
-    elevation: float = 0.0,
+    altitude: float = 0.0,
 ) -> typing.Union[np.array, float]:
     """ Compute the altitude angle of the sun
 
@@ -41,7 +41,7 @@ def sun_angle(
         Latitude(s) of interest
     lon: typing.Union[np.array, float]
         Longitude(s) of interest
-    elevation: float, optional
+    altitude: float, optional
         Height at which to compute altitude angle
 
     Returns
@@ -131,6 +131,6 @@ def sun_angle(
     R = 6370  # [km]
 
     altitude_angle_corrected = altitude_angle + np.rad2deg(
-        np.arccos(R / (R + elevation))
+        np.arccos(R / (R + altitude))
     )
     return altitude_angle_corrected
