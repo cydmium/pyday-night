@@ -197,7 +197,9 @@ def easy_mask(
     except TypeError:
         lat_resolution = resolution
         lon_resolution = resolution
-    lats = np.arange(lat_range[0], lat_range[1] + lat_resolution, lat_resolution)
-    lons = np.arange(lon_range[0], lon_range[1] + lon_resolution, lon_resolution)
+    lats = np.arange(
+        lat_range[0], lat_range[1] + lat_resolution / 10, lat_resolution
+    )  # divide by 10 for floating point errors
+    lons = np.arange(lon_range[0], lon_range[1] + lon_resolution / 10, lon_resolution)
     lon_grid, lat_grid = np.meshgrid(lons, lats)
     return mask(time, lat_grid, lon_grid, altitude)
