@@ -73,10 +73,22 @@ def test_sun_angle_bounds():
     # Latitude out of bounds
     with pytest.raises(ValueError):
         pydaynight.sun_angle(datetime.datetime(2000, 1, 1), 95, 0)
+    with pytest.raises(ValueError):
+        pydaynight.sun_angle(datetime.datetime(2000, 1, 1), np.array([50, 95]), 0)
+    with pytest.raises(ValueError):
+        pydaynight.sun_angle(
+            datetime.datetime(2000, 1, 1), np.array([[50, 30], [20, -95]]), 0
+        )
 
     # Longitude out of bounds
     with pytest.raises(ValueError):
         pydaynight.sun_angle(datetime.datetime(2000, 1, 1), 0, 190)
+    with pytest.raises(ValueError):
+        pydaynight.sun_angle(datetime.datetime(2000, 1, 1), 0, np.array([50, 190]))
+    with pytest.raises(ValueError):
+        pydaynight.sun_angle(
+            datetime.datetime(2000, 1, 1), 0, np.array([[50, 30], [20, -190]])
+        )
 
     # Elevation out of bounds
     with pytest.raises(ValueError):
@@ -107,4 +119,14 @@ def test_sun_angle_array():
             80,
         ).round(4)
         == np.array([-14.0180, -6.4570, -57.8999, 24.5239, 32.0849])
+    ).all()
+
+    # 2D Array input
+    assert (
+        pydaynight.sun_angle(
+            datetime.datetime(1996, 7, 1),
+            np.array([[5, 5], [6, 6]]),
+            np.array([[-120, -119], [-120, -119]]),
+        ).round(4)
+        == np.array([[30.3645, 29.4532], [30.7654, 29.8520]])
     ).all()
