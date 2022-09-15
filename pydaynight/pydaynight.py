@@ -137,7 +137,7 @@ def sun_angle(
 
 
 def mask(
-    time: datetime.datetime, lon_grid: np.ndarray, lat_grid: np.ndarray, altitude
+    time: datetime.datetime, lat_grid: np.ndarray, lon_grid: np.ndarray, altitude
 ) -> np.ndarray:
     """ Create a mask where 1s represent daytime and 0s represent nighttime from provided lat/lon grid
 
@@ -145,10 +145,10 @@ def mask(
     ----------
     time: datetime.datetime
         Time of interest [UT]
-    lon_grid: np.ndarray
-        Meshgrid of longitude points
     lat_grid: np.ndarray
         Meshgrid of latitude points
+    lon_grid: np.ndarray
+        Meshgrid of longitude points
     altitude: float
         km above sea level
 
