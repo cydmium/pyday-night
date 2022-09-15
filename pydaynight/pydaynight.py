@@ -167,9 +167,10 @@ def mask(
 
 def easy_mask(
     time: datetime.datetime,
-    extent: tuple,
+    lat_range: tuple,
+    lon_range: tuple,
+    resolution: typing.Union[float, tuple] = 1.0,
     altitude: float = 0.0,
-    resolution: float = 1.0,
 ) -> np.ndarray:
     """ Create a mask where 1s represent daytime and 0s represent nighttime from extent/resolution
 
@@ -177,19 +178,26 @@ def easy_mask(
     ----------
     time: datetime.datetime
         Time of interest [UT]
-    extent: tuple
-        (lon_min, lon_max, lat_min, lat_max)
+    lat_range: tuple
+        (lat_min, lat_max)
+    lon_range: tuple
+        (lon_min, lon_max)
+    resolution: Union[float, tuple]
+        Step size for the mask
     altitude: float
         km above sea level
-    resolution: float
-        Step size for the mask
 
     Returns
     -------
     np.ndarray:
         Mask of where daytime (1s) and nighttime (0s) occurs
     """
-    lats = np.arange(extent[2], extent[3] + resolution, resolution)
-    lons = np.arange(extent[0], extent[1] + resolution, resolution)
+    try:
+        lat_resolution, lon_resolution = resolution
+    except TypeError:
+        lat_resolution = resolution
+        lon_resolution = resolution
+    lats = np.arange(lat_range[0], lat_range[1] + lat_resolution, lat_resolution)
+    lons = np.arange(lon_range[0], lon_range[1] + lon_resolution, lon_resolution)
     lon_grid, lat_grid = np.meshgrid(lons, lats)
     return mask(time, lat_grid, lon_grid, altitude)
