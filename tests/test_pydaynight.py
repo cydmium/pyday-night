@@ -7,17 +7,22 @@ import pydaynight
 
 
 def test_julian_day():
+    # Normal Conditions
     assert (
         round(pydaynight.julian_day(datetime.datetime(2000, 1, 1, 12, 30, 30)), 9)
         == 2.451545021180556e6
-    )  # Normal Conditions
+    )
+    # Edge of date range
+    assert pydaynight.julian_day(datetime.datetime(1, 1, 1)) == 1721425.5
+    # Day Only
+    assert pydaynight.julian_day(datetime.datetime(2000, 1, 1)) == 2451544.5
+    # Int-like output
+    assert pydaynight.julian_day(datetime.datetime(2000, 1, 1, 12)) == 2451545
+    # Leap Years
     assert (
-        pydaynight.julian_day(datetime.datetime(1, 1, 1)) == 1721425.5
-    )  # Edge of date range
-    assert pydaynight.julian_day(datetime.datetime(2000, 1, 1)) == 2451544.5  # Day Only
-    assert (
-        pydaynight.julian_day(datetime.datetime(2000, 1, 1, 12)) == 2451545
-    )  # Int-like output
+        round(pydaynight.julian_day(datetime.datetime(2004, 2, 29, 3, 42, 13)), 9)
+        == 2.453064654317129e6
+    )
 
 
 def test_sun_angle_no_elevation():
