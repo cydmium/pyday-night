@@ -130,3 +130,26 @@ def test_sun_angle_array():
         ).round(4)
         == np.array([[30.3645, 29.4532], [30.7654, 29.8520]])
     ).all()
+
+
+def test_mask():
+    # Check if mask output and easy mask output agree
+    day = datetime.datetime(1996, 9, 22, 12)
+    assert (
+        pydaynight.mask(
+            day,
+            np.array([[-45, -45, -45], [45, 45, 45]]),
+            np.array([[-90, 0, 90], [-90, 0, 90]]),
+        )
+        == pydaynight.easy_mask(day, (-90, 90, -45, 45), 0, 90)
+    ).all()
+
+    # Check for correct output of mask
+    assert (
+        pydaynight.mask(
+            day,
+            np.array([[-45, -45, -45], [45, 45, 45]]),
+            np.array([[-90, 0, 90], [-90, 0, 90]]),
+        )
+        == np.array([[1, 1, 0], [1, 1, 0]])
+    ).all()
