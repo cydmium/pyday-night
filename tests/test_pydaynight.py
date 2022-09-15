@@ -141,7 +141,7 @@ def test_mask():
             np.array([[-45, -45, -45], [45, 45, 45]]),
             np.array([[-90, 0, 90], [-90, 0, 90]]),
         )
-        == pydaynight.easy_mask(day, (-90, 90, -45, 45), 0, 90)
+        == pydaynight.easy_mask(day, (-45, 45), (-90, 90), 90, 0)
     ).all()
 
     # Check for correct output of mask
@@ -153,3 +153,6 @@ def test_mask():
         )
         == np.array([[1, 1, 0], [1, 1, 0]])
     ).all()
+
+    # Check for correct size of easy_mask with variable resolution
+    assert pydaynight.easy_mask(day, (-45, 45), (-90, 90), (45, 90), 0).shape == (3, 3)
