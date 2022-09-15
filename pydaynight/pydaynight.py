@@ -137,7 +137,10 @@ def sun_angle(
 
 
 def mask(
-    time: datetime.datetime, lat_grid: np.ndarray, lon_grid: np.ndarray, altitude
+    time: datetime.datetime,
+    lat_grid: np.ndarray,
+    lon_grid: np.ndarray,
+    altitude: float = 0.0,
 ) -> np.ndarray:
     """ Create a mask where 1s represent daytime and 0s represent nighttime from provided lat/lon grid
 
@@ -149,7 +152,7 @@ def mask(
         Meshgrid of latitude points
     lon_grid: np.ndarray
         Meshgrid of longitude points
-    altitude: float
+    altitude: float, optional
         km above sea level
 
     Returns
@@ -163,7 +166,10 @@ def mask(
 
 
 def easy_mask(
-    time: datetime.datetime, extent: tuple, altitude: float, resolution: float
+    time: datetime.datetime,
+    extent: tuple,
+    altitude: float = 0.0,
+    resolution: float = 1.0,
 ) -> np.ndarray:
     """ Create a mask where 1s represent daytime and 0s represent nighttime from extent/resolution
 
@@ -186,4 +192,4 @@ def easy_mask(
     lats = np.arange(extent[2], extent[3] + resolution, resolution)
     lons = np.arange(extent[0], extent[1] + resolution, resolution)
     lon_grid, lat_grid = np.meshgrid(lons, lats)
-    return mask(time, lon_grid, lat_grid, altitude)
+    return mask(time, lat_grid, lon_grid, altitude)
