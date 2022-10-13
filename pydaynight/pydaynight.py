@@ -64,8 +64,6 @@ def sun_angle(
     if altitude < 0:
         raise ValueError("Negative altitude is not allowed")
 
-    k = np.pi / 180
-
     # Number of Julian Centuries since Jan 1, 2000 12 UT
     jd = julian_day(time)
     num_centuries = (jd - 2451545.0) / 36525.0
