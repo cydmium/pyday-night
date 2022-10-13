@@ -4,10 +4,9 @@ The format for this changelog is based on [Keep a Changelog](https://keepachange
 and this project adheres to (mostly) [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 All dates listed follow the ISO standard of yyyy-mm-dd.
 
-## [Unreleased]
+## [v0.2.1] - 2022-10-13
 ### Added
-### Changed
-### Removed
+ - sun_angle now uses numba to improve runtime on repeated calls [David Richardson <drichardson42@gatech.edu>]
 
 ## [v0.2.0] - 2022-09-15
 ### Added
