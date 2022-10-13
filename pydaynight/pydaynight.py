@@ -2,6 +2,7 @@ import datetime
 import typing
 
 import numpy as np
+from numba import njit
 
 
 def julian_day(time_of_interest: datetime.datetime) -> float:
@@ -66,6 +67,12 @@ def sun_angle(
 
     # Number of Julian Centuries since Jan 1, 2000 12 UT
     jd = julian_day(time)
+    return _sun_angle_helper(jd, lat, lon, altitude)
+
+
+@njit(fastmath=True, parallel=True)
+def _sun_angle_helper(jd, lat, lon, altitude):
+    """ Computations for sun angle, but using numba """
     num_centuries = (jd - 2451545.0) / 36525.0
     num_centuries2 = num_centuries * num_centuries
     num_centuries3 = num_centuries2 * num_centuries
