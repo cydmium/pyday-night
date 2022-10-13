@@ -2,10 +2,11 @@ import datetime
 import typing
 
 import numpy as np
+from numba import njit
 
 
 def julian_day(time_of_interest: datetime.datetime) -> float:
-    """ Compute the Julian day, i.e. number of days since Jan 1, 4713 BC 12 UT
+    """Compute the Julian day, i.e. number of days since Jan 1, 4713 BC 12 UT
 
     Parameters
     ----------
@@ -31,7 +32,7 @@ def sun_angle(
     lon: typing.Union[np.array, float],
     altitude: float = 0.0,
 ) -> typing.Union[np.array, float]:
-    """ Compute the altitude angle of the sun
+    """Compute the altitude angle of the sun
 
     Parameters
     ----------
@@ -66,6 +67,12 @@ def sun_angle(
 
     # Number of Julian Centuries since Jan 1, 2000 12 UT
     jd = julian_day(time)
+    return _sun_angle_helper(jd, lat, lon, altitude)
+
+
+@njit(fastmath=True, parallel=True)
+def _sun_angle_helper(jd, lat, lon, altitude):
+    """Computations for sun angle, but using numba"""
     num_centuries = (jd - 2451545.0) / 36525.0
     num_centuries2 = num_centuries * num_centuries
     num_centuries3 = num_centuries2 * num_centuries
@@ -94,7 +101,7 @@ def sun_angle(
     X = np.cos(L)
     Y = np.cos(eps) * np.sin(L)
     Z = np.sin(eps) * np.sin(L)
-    R = np.sqrt(1 - Z ** 2)
+    R = np.sqrt(1 - Z**2)
 
     delta = np.arctan2(Z, R)  # [rad] declination -- latitude position of sun --
     right_ascension = 7.63943726841098 * np.arctan2(
@@ -140,7 +147,7 @@ def mask(
     lon_grid: np.ndarray,
     altitude: float = 0.0,
 ) -> np.ndarray:
-    """ Create a mask where 1s represent daytime and 0s represent nighttime from provided lat/lon grid
+    """Create a mask where 1s represent daytime and 0s represent nighttime from provided lat/lon grid
 
     Parameters
     ----------
@@ -170,7 +177,7 @@ def easy_mask(
     resolution: typing.Union[float, tuple] = 1.0,
     altitude: float = 0.0,
 ) -> np.ndarray:
-    """ Create a mask where 1s represent daytime and 0s represent nighttime from extent/resolution
+    """Create a mask where 1s represent daytime and 0s represent nighttime from extent/resolution
 
     Parameters
     ----------

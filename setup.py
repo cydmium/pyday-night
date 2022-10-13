@@ -18,11 +18,8 @@ setuptools.setup(
     author_email="drichardson42@gatech.edu",
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(include=["pydaynight"]),
-    install_requires = requirements,
-    extras_require={
-        "dev": ["twine"],
-        "test": ["pytest"]
-    },
+    install_requires=requirements,
+    extras_require={"dev": ["twine"], "test": ["pytest"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
